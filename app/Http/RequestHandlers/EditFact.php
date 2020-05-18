@@ -23,8 +23,8 @@ use Fisharebest\Webtrees\Auth;
 use Fisharebest\Webtrees\Exceptions\HttpNotFoundException;
 use Fisharebest\Webtrees\Fact;
 use Fisharebest\Webtrees\Factory;
-use Fisharebest\Webtrees\GedcomTag;
 use Fisharebest\Webtrees\Http\ViewResponseTrait;
+use Fisharebest\Webtrees\Services\GedcomEditService;
 use Fisharebest\Webtrees\Tree;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -38,6 +38,19 @@ use function assert;
 class EditFact implements RequestHandlerInterface
 {
     use ViewResponseTrait;
+
+    /** @var GedcomEditService */
+    private $gedcom_edit_service;
+
+    /**
+     * EditFact constructor.
+     *
+     * @param GedcomEditService $gedcom_edit_service
+     */
+    public function __construct(GedcomEditService $gedcom_edit_service)
+    {
+        $this->gedcom_edit_service = $gedcom_edit_service;
+    }
 
     /**
      * @param ServerRequestInterface $request
@@ -68,11 +81,12 @@ class EditFact implements RequestHandlerInterface
 
         $can_edit_raw = Auth::isAdmin() || $tree->getPreference('SHOW_GEDCOM_RECORD');
 
-        $title = $record->fullName() . ' - ' . GedcomTag::getLabel($fact->getTag());
+        $title = $record->fullName() . ' - ' . Factory::gedcomElement()->make($fact->tag())->label();
 
         return $this->viewResponse('edit/edit-fact', [
             'can_edit_raw' => $can_edit_raw,
-            'edit_fact'    => $fact,
+            'fact'         => $fact,
+            'gedcom'       => $this->gedcom_edit_service->insertMissingSubtags($fact),
             'record'       => $record,
             'title'        => $title,
             'tree'         => $tree,

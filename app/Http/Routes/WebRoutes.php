@@ -238,6 +238,8 @@ class WebRoutes
                 $router->post('blocks-update', '/blocks', 'Admin\ModuleController::updateBlocks');
                 $router->get('charts', '/charts', 'Admin\ModuleController::listCharts');
                 $router->post('charts-update', '/charts', 'Admin\ModuleController::updateCharts');
+                $router->get('custom-tags', '/custom-tags', 'Admin\ModuleController::listCustomTags');
+                $router->post('custom-tags-update', '/custom-tags', 'Admin\ModuleController::updateCustomTags');
                 $router->get('data-fixes', '/data-fixes', 'Admin\ModuleController::listDataFixes');
                 $router->post('data-fixes-update', '/data-fixes', 'Admin\ModuleController::updateDataFixes');
                 $router->get('lists', '/lists', 'Admin\ModuleController::listLists');
